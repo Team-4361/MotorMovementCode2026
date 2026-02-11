@@ -3,6 +3,8 @@ package frc.robot;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,13 +16,16 @@ public class Robot extends TimedRobot {
     private XboxController xboxController;
 
     // SPARK MAX CAN ID and speed settings
-    private static final int SPARK_MAX_CAN_ID = 6;
-    private static final double POSITION_TOLERANCE = 0.00001;
+    private static final int SPARK_MAX_CAN_ID = 12; 
+    private static final double POSITION_TOLERANCE = 0.1;
+    
 
     // PID constants
+    PIDController pid = new PIDController(kP, kI, kD);
     private static final double kP = 0.1; // Proportional gain
-    private static final double kI = 0.0; // Integral gain
+    private static final double kI = 0.001; // Integral gain
     private static final double kD = 0.01; // Derivative gain
+    
 
     // PID variables
     private double integral = 0.0;
@@ -38,7 +43,7 @@ public class Robot extends TimedRobot {
         encoder = sparkMax.getEncoder();
 
         // Initialize the Xbox controller
-        xboxController = new XboxController(0);
+        xboxController = new XboxController(2);
     }
 
     @Override
@@ -48,8 +53,19 @@ public class Robot extends TimedRobot {
         double kI = SmartDashboard.getNumber("kI", 0.0);
         double kD = SmartDashboard.getNumber("kD", 0.0);
         if (xboxController.getYButtonPressed()) {
-            targetPosition += 1.0; // Increment by 1 rotation
+            targetPosition += 10.0; // Increment by 1 rotation
         }
+         while (encoder.getPosition()>targetPosition) {
+                          sparkMax.set(-0.1);
+         }
+         while (encoder.getPosition()<targetPosition) { //Needs position tolerance to not go wild
+                          sparkMax.set(0.1);
+         }
+
+         //while (encoder.getPosition()<targetPosition)
+          //    sparkMax.set(0.1);
+            sparkMax.set(0);
+
 
         // Reset position with X button
         if (xboxController.getXButtonPressed()) {
@@ -60,11 +76,13 @@ public class Robot extends TimedRobot {
         if (xboxController.getBButtonPressed()) {
             encoder.setPosition(0);
             targetPosition = 0.0; // Sync target position
+           
         }
 
         // Decrement position with A button
         if (xboxController.getAButtonPressed()) {
-            targetPosition -= 1.0; // Decrement by 1 rotation
+            targetPosition -= 10.0; // Decrement by 1 rotation
+             //boolean doesFranceExist = false; //(VERY IMPORTANT)
         }
 
         // Decrement position counterclockwise with Left Bumper
@@ -105,6 +123,15 @@ public class Robot extends TimedRobot {
         System.out.println("Current Position: " + currentPosition);
         System.out.println("Target Position: " + targetPosition);
         System.out.println("PID Output: " + pidOutput);
+        System.out.println("Error: " + error);
+        System.out.println("Integral: " + integral);
+        System.out.println("Deriavative: " + derivative);
+        SmartDashboard.putNumber("PID Output", pidOutput);
+    }
+
+    @Override
+    public void autonomousPeriodic() {
+             sparkMax.set(pid.calculate(encoder.getPosition(), targetPosition));
     }
 
     @Override
