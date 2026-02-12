@@ -105,6 +105,9 @@ public class Robot extends TimedRobot {
 
         // Calculate PID output
         double pidOutput = (kP * error) + (kI * integral) + (kD * derivative);
+        /* System.out.println("Test1: " + kP * error);
+        System.out.println("Test2:"  + kI * integral);
+        System.out.println("Test3: " + kD * derivative); */ //Figured out the issue; These values DO NOT change
 
         // Limit the PID output to the motor speed range
         pidOutput = Math.max(-1.0, Math.min(1.0, pidOutput)); // Limit between -1.0 and 1.0
