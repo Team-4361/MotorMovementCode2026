@@ -17,14 +17,14 @@ public class Robot extends TimedRobot {
 
     // SPARK MAX CAN ID and speed settings
     private static final int SPARK_MAX_CAN_ID = 12; 
-    private static final double POSITION_TOLERANCE = 0.0001;
+    private static final double POSITION_TOLERANCE = 0.001;
     
 
     // PID constants
     
-     private static double kP = 0.01; // Proportional gain
+     private static double kP = 0.05; // Proportional gain
      private static double kI = 0.00; // Integral gain
-     private static double kD = 0.0001; // Derivative gain
+     private static double kD = 0.002; // Derivative gain
      PIDController pid = new PIDController(kP, kI, kD);
     
 
@@ -34,6 +34,7 @@ public class Robot extends TimedRobot {
 
     // Target position for the motor
     private double targetPosition = 0.0;
+    
 
     @Override
     public void robotInit() {
@@ -49,19 +50,16 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
+        /*
+         * Important Constants
+         * 1 rotation = + or - 1 targetPosition
+         * 1 inch = 160 rotations
+         */
         // Increment position with Y button
         /* kP = SmartDashboard.getNumber("kP", 0.0); //testing  purposes
         kI = SmartDashboard.getNumber("kI", 0.0);
         kD = SmartDashboard.getNumber("kD", 0.0); */
-        if (xboxController.getYButtonPressed()) {
-            targetPosition += 10.0; // Increment by 1 rotation
-           while (encoder.getPosition()<targetPosition)
-              sparkMax.set(0.1);
-            sparkMax.set(0);
-        }
 
-         //while (encoder.getPosition()<targetPosition)
-          //    sparkMax.set(0.1);
 
 
         // Reset position with X button
@@ -69,40 +67,38 @@ public class Robot extends TimedRobot {
             targetPosition = 0.0;
         }
 
-        // Reset encoder position to 0 with B button
+        // Reset encoder position to 0 with B button; Zero
         if (xboxController.getBButtonPressed()) {
             encoder.setPosition(0);
             targetPosition = 0.0; // Sync target position
            
         }
 
+        //Decrement position with Y button
+        if (xboxController.getYButtonPressed()) {
+            targetPosition += 10.0; // Increment by 1 rotation
+        }
+
         // Decrement position with A button
         if (xboxController.getAButtonPressed()) {
-            targetPosition -= 10.0; // Decrement by 1 rotation
-             while (encoder.getPosition()>targetPosition)
-              {
-                sparkMax.set(-0.1);
-              }
-              sparkMax.set(0);
-             //boolean doesFranceExist = false; //(VERY IMPORTANT)
+            targetPosition -= 160.0; // Decrement by 1 rotation 
         }
 
-        // Decrement position counterclockwise with Left Bumper
+        // Make the Linear Actuator move up slightly; Used to help get an exact position
         if (xboxController.getLeftBumperPressed()) {
             targetPosition -= 0.5; // Decrement by 0.5 rotation
-            while (encoder.getPosition()>targetPosition)
-              sparkMax.set(0.1);
-            sparkMax.set(0);
         }
 
-        // Increment position clockwise with Right Bumper
+        // Make the Linear Actuator move down slightly; Used to help get an exact position
         if (xboxController.getRightBumperPressed()) {
             targetPosition += 0.5; // Increment by 0.5 rotation
-            while (encoder.getPosition()<targetPosition)
-              sparkMax.set(0.1);
-            sparkMax.set(0);
         }
 
+
+
+        /*
+         * PID calculations
+         */
         // Get the current position and calculate error
         double currentPosition = encoder.getPosition();
         double error = targetPosition - currentPosition;
@@ -113,10 +109,7 @@ public class Robot extends TimedRobot {
 
         // Calculate PID output
         double pidOutput = (kP * error) + (kI * integral) + (kD * derivative);
-        /* System.out.println("Test1: " + kP * error);
-        System.out.println("Test2:"  + kI * integral);
-        System.out.println("Test3: " + kD * derivative); */ //Figured out the issue; These values DO NOT change
-
+    
         // Limit the PID output to the motor speed range
         pidOutput = Math.max(-1.0, Math.min(1.0, pidOutput)); // Limit between -1.0 and 1.0
 
@@ -133,10 +126,6 @@ public class Robot extends TimedRobot {
         // Print current and target positions for debugging
         System.out.println("Current Position: " + currentPosition);
         System.out.println("Target Position: " + targetPosition);
-        /* System.out.println("PID Output: " + pidOutput); //testing purposes
-        System.out.println("Error: " + error);
-        System.out.println("Integral: " + integral);
-        System.out.println("Deriavative: " + derivative); */ 
         SmartDashboard.putNumber("PID Output", pidOutput); //Allows you to see pid Output and the other values
         SmartDashboard.putNumber("kP", kP); 
         SmartDashboard.putNumber("kI", kI);
@@ -145,7 +134,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-             sparkMax.set(pid.calculate(encoder.getPosition(), targetPosition));
+             sparkMax.set(pid.calculate(encoder.getPosition(), targetPosition)); //gets PID in auto
     }
 
     @Override
