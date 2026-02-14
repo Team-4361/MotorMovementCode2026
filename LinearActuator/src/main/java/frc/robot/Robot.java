@@ -17,14 +17,15 @@ public class Robot extends TimedRobot {
 
     // SPARK MAX CAN ID and speed settings
     private static final int SPARK_MAX_CAN_ID = 12; 
-    private static final double POSITION_TOLERANCE = 0.1;
+    private static final double POSITION_TOLERANCE = 0.0001;
     
 
     // PID constants
-    PIDController pid = new PIDController(kP, kI, kD);
-    private static final double kP = 0.1; // Proportional gain
-    private static final double kI = 0.001; // Integral gain
-    private static final double kD = 0.01; // Derivative gain
+    
+     private static double kP = 0.01; // Proportional gain
+     private static double kI = 0.00; // Integral gain
+     private static double kD = 0.0001; // Derivative gain
+     PIDController pid = new PIDController(kP, kI, kD);
     
 
     // PID variables
@@ -49,22 +50,18 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         // Increment position with Y button
-        double kP = SmartDashboard.getNumber("kP", 0.0);
-        double kI = SmartDashboard.getNumber("kI", 0.0);
-        double kD = SmartDashboard.getNumber("kD", 0.0);
+        /* kP = SmartDashboard.getNumber("kP", 0.0); //testing  purposes
+        kI = SmartDashboard.getNumber("kI", 0.0);
+        kD = SmartDashboard.getNumber("kD", 0.0); */
         if (xboxController.getYButtonPressed()) {
             targetPosition += 10.0; // Increment by 1 rotation
+           while (encoder.getPosition()<targetPosition)
+              sparkMax.set(0.1);
+            sparkMax.set(0);
         }
-         while (encoder.getPosition()>targetPosition) {
-                          sparkMax.set(-0.1);
-         }
-         while (encoder.getPosition()<targetPosition) { //Needs position tolerance to not go wild
-                          sparkMax.set(0.1);
-         }
 
          //while (encoder.getPosition()<targetPosition)
           //    sparkMax.set(0.1);
-            sparkMax.set(0);
 
 
         // Reset position with X button
@@ -82,17 +79,28 @@ public class Robot extends TimedRobot {
         // Decrement position with A button
         if (xboxController.getAButtonPressed()) {
             targetPosition -= 10.0; // Decrement by 1 rotation
+             while (encoder.getPosition()>targetPosition)
+              {
+                sparkMax.set(-0.1);
+              }
+              sparkMax.set(0);
              //boolean doesFranceExist = false; //(VERY IMPORTANT)
         }
 
         // Decrement position counterclockwise with Left Bumper
         if (xboxController.getLeftBumperPressed()) {
             targetPosition -= 0.5; // Decrement by 0.5 rotation
+            while (encoder.getPosition()>targetPosition)
+              sparkMax.set(0.1);
+            sparkMax.set(0);
         }
 
         // Increment position clockwise with Right Bumper
         if (xboxController.getRightBumperPressed()) {
             targetPosition += 0.5; // Increment by 0.5 rotation
+            while (encoder.getPosition()<targetPosition)
+              sparkMax.set(0.1);
+            sparkMax.set(0);
         }
 
         // Get the current position and calculate error
@@ -125,11 +133,14 @@ public class Robot extends TimedRobot {
         // Print current and target positions for debugging
         System.out.println("Current Position: " + currentPosition);
         System.out.println("Target Position: " + targetPosition);
-        System.out.println("PID Output: " + pidOutput);
+        /* System.out.println("PID Output: " + pidOutput); //testing purposes
         System.out.println("Error: " + error);
         System.out.println("Integral: " + integral);
-        System.out.println("Deriavative: " + derivative);
-        SmartDashboard.putNumber("PID Output", pidOutput);
+        System.out.println("Deriavative: " + derivative); */ 
+        SmartDashboard.putNumber("PID Output", pidOutput); //Allows you to see pid Output and the other values
+        SmartDashboard.putNumber("kP", kP); 
+        SmartDashboard.putNumber("kI", kI);
+        SmartDashboard.putNumber("kD", kD);
     }
 
     @Override
