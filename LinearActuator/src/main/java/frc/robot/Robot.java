@@ -53,7 +53,7 @@ public class Robot extends TimedRobot {
         /*
          * Important Constants
          * 1 rotation = + or - 1 targetPosition
-         * 1 inch = 160 rotations
+         * 1 inch = 160~ rotations
          */
         // Increment position with Y button
         /* kP = SmartDashboard.getNumber("kP", 0.0); //testing  purposes
@@ -76,7 +76,7 @@ public class Robot extends TimedRobot {
 
         //Decrement position with Y button
         if (xboxController.getYButtonPressed()) {
-            targetPosition += 10.0; // Increment by 1 rotation
+            targetPosition += 160.0; // Increment by 1 rotation
         }
 
         // Decrement position with A button
