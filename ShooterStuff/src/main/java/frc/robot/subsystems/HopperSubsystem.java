@@ -26,7 +26,7 @@ private static final double FEED_SPEED = 0.5;*/
 
   public HopperSubsystem()
   {
-    hopperMotor = new SparkMax(2, MotorType.kBrushless); // creates a new motor controller object for the hopper motor
+    hopperMotor = new SparkMax(6, MotorType.kBrushless); // creates a new motor controller object for the hopper motor
     SparkMaxConfig config = new SparkMaxConfig();
     
     config.idleMode(IdleMode.kCoast); //
