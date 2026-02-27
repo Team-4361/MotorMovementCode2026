@@ -86,7 +86,7 @@ private final TalonFX krakenMotor = new TalonFX(3);
         
     private final FlyWheelConfig shooterConfig = new FlyWheelConfig(motor)
             .withDiameter(Inches.of(4))
-            .withMass(Pounds.of(1))
+            .withMass(Pounds.of(3.375)) //flywheel mass (6 flywheels)
             .withUpperSoftLimit(RPM.of(6000))
             .withTelemetry("Shooter", TelemetryVerbosity.HIGH);
 
