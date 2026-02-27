@@ -27,7 +27,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-
+import java.util.Set;
 import static edu.wpi.first.units.Units.RPM;
 
 import java.io.File;
@@ -104,14 +104,17 @@ private double SHOOTER_SPEED = 0.1;
    * When the trigger is released, whileTrue() cancels this command and each
    * subsystem falls back to its default (stop) command automatically.
    */
-  private Command shootWithFeedCommand() {
-    return shooter.set(SmartDashboard.getNumber("SHOOTER_SPEED", 0.1))
-                  .alongWith(
-                      hopper.runMotorCommand(SmartDashboard.getNumber("HOPPER_SPEED", 0.1)),
-                      feeder.runMotorCommand(SmartDashboard.getNumber("FEEDER_SPEED", 0.1))
-                  )
-                  .withName("ShootWithFeed");
-  }
+private Command shootWithFeedCommand() {
+    return Commands.defer(() ->
+        shooter.set(SmartDashboard.getNumber("SHOOTER_SPEED", 0.1))
+               .alongWith(
+                   hopper.runMotorCommand(SmartDashboard.getNumber("HOPPER_SPEED", 0.1)),
+                   feeder.runMotorCommand(SmartDashboard.getNumber("FEEDER_SPEED", 0.1))
+               )
+               .withName("ShootWithFeed"),
+        Set.of(shooter, hopper, feeder)  // declare requirements
+    );
+}
 
   // ========== AUTO ==========
 
