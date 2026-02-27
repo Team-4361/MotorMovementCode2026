@@ -55,6 +55,7 @@ public class FeederSubsystem extends SubsystemBase
     public void periodic() {
         // This method will be called once per scheduler run
         // Add any telemetry or monitoring here if needed
+        SmartDashboard.putNumber("Feeder RPM", encoder.getVelocity());
     }
 
 
