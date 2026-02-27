@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -45,7 +44,7 @@ import swervelib.SwerveInputStream;
 public class RobotContainer
 {
 
-  // ========== FIELD CONSTANTS ==========
+  // == ======== FIELD CONSTANTS ==========
   private static final double FIELD_LENGTH_M = Units.inchesToMeters(651.25);
 
   public static final Translation2d HUB_CENTER_BLUE =
@@ -61,8 +60,7 @@ public class RobotContainer
   double xV = 0;
   double yV = 0;
   double rV = 0;
-  final CommandXboxController driverXbox   = new CommandXboxController(2);
-  final CommandXboxController operatorXbox = new CommandXboxController(3);
+  final CommandXboxController operatorXbox = new CommandXboxController(2);
 
   // ========== SUBSYSTEMS ==========
 
@@ -101,16 +99,24 @@ public class RobotContainer
    * When toggled off, all three stop together automatically.
    */
   private Command shootWithFeedCommand() {
-    return shooter.setVelocity(RPM.of(500))
+    return shooter.setVelocity(RPM.of(1000))
                   .alongWith(
-                      hopper.runMotorCommand(HOPPER_SPEED),
-                      feeder.runMotorCommand(FEEDER_SPEED)
+                      hopper.runMotorCommand(0.1),
+                      feeder.runMotorCommand(0.1)
                   )
                   .withName("ShootWithFeed");
   }
 
+    private Command stopStuff() {
+    return shooter.setVelocity(RPM.of(0))
+                  .alongWith(
+                      hopper.stopMotorCommand(),
+                      feeder.stopMotorCommand()
+                  )
+                  .withName("stop");
+  }
+
   // ========== AUTO ==========
-  private SendableChooser<Command> autoChooser;
 
 
   /**
@@ -141,8 +147,6 @@ public class RobotContainer
     if (DriverStation.isTest())
     {
 
-      driverXbox.leftBumper().onTrue(Commands.none());
-      driverXbox.rightBumper().onTrue(Commands.none());
     }
     else
     {
@@ -168,7 +172,11 @@ public class RobotContainer
       // This is the ONLY way to run the hopper and feeder — they are never
       // triggered independently because a ball would jam against a stopped
       // shooter wheel. When toggled off, all three stop together.
-      operatorXbox.leftTrigger(0.5).toggleOnTrue(shootWithFeedCommand());
+// This creates a "Trigger" that stays active as long as the axis is over 0.5
+      operatorXbox.leftTrigger(0.5)
+          .whileTrue(shootWithFeedCommand())
+          .onFalse(stopStuff());
+
     }
   }
 
@@ -187,13 +195,6 @@ public class RobotContainer
   }
 
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand()
-  {
-    return autoChooser.getSelected();
-  }
+
 
 }

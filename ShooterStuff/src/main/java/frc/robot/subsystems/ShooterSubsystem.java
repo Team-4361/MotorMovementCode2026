@@ -79,17 +79,19 @@ SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
   .withOpenLoopRampRate(Seconds.of(0.25));
 
 
-private final TalonFX krakenMotor = new TalonFX(4);
+private final TalonFX krakenMotor = new TalonFX(3);
     private final SmartMotorController motor        =
         new TalonFXWrapper(krakenMotor, DCMotor.getKrakenX60(1), smcConfig);
+
+        
     private final FlyWheelConfig shooterConfig = new FlyWheelConfig(motor)
-            .withDiameter(Inches.of(4))
-            .withMass(Pounds.of(1))
+            //.withDiameter(Inches.of(4))
+            //.withMass(Pounds.of(1))
             .withUpperSoftLimit(RPM.of(6000))
             .withTelemetry("Shooter", TelemetryVerbosity.HIGH);
 
     private final FlyWheel shooter = new FlyWheel(shooterConfig);
-
+ 
     // ── Last commanded target RPM (for isAtTargetSpeed) ──────────────────────
 
     private double targetRPM = 0.0;
