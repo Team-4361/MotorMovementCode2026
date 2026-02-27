@@ -79,9 +79,10 @@ public class RobotContainer
   private   double FEEDER_SPEED = 0.1;
     private   double SHOOTER_SPEED = 0.1;
  */
-    private double HOPPER_SPEED = SmartDashboard.getNumber("HOPPER_SPEED", 0.1);
-    private double FEEDER_SPEED = SmartDashboard.getNumber("FEEDER_SPEED", 0.1);
-   private double SHOOTER_SPEED = SmartDashboard.getNumber("SHOOTER_SPEED", 0.1);
+// ========== FEED SYSTEM SPEEDS ==========
+private double HOPPER_SPEED  = 0.1;
+private double FEEDER_SPEED  = 0.1;
+private double SHOOTER_SPEED = 0.1;
 
 
   // =========================================================================
@@ -104,10 +105,10 @@ public class RobotContainer
    * subsystem falls back to its default (stop) command automatically.
    */
   private Command shootWithFeedCommand() {
-    return shooter.set(FEEDER_SPEED)
+    return shooter.set(SmartDashboard.getNumber("SHOOTER_SPEED", 0.1))
                   .alongWith(
-                      hopper.runMotorCommand(HOPPER_SPEED),
-                      feeder.runMotorCommand(SHOOTER_SPEED)
+                      hopper.runMotorCommand(SmartDashboard.getNumber("HOPPER_SPEED", 0.1)),
+                      feeder.runMotorCommand(SmartDashboard.getNumber("FEEDER_SPEED", 0.1))
                   )
                   .withName("ShootWithFeed");
   }
@@ -125,15 +126,18 @@ public class RobotContainer
     // shootWithFeedCommand() and falls back to these defaults automatically.
     // This replaces the old onFalse(stopStuff()) which caused command conflicts
     // and made the motors vibrate/stutter.
+
+        SmartDashboard.putNumber("HOPPER_SPEED",  0.1);
+    SmartDashboard.putNumber("FEEDER_SPEED",  0.1);
+    SmartDashboard.putNumber("SHOOTER_SPEED", 0.1);
+
+
     shooter.setDefaultCommand(shooter.set(0));
     hopper.setDefaultCommand(hopper.stopMotorCommand());
     feeder.setDefaultCommand(feeder.stopMotorCommand());
     
 
 
-    HOPPER_SPEED = SmartDashboard.getNumber("HOPPER_SPEED", 0.1);
-    FEEDER_SPEED = SmartDashboard.getNumber("FEEDER_SPEED", 0.1);
-    SHOOTER_SPEED = SmartDashboard.getNumber("SHOOTER_SPEED", 0.1);
 
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
