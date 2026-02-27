@@ -63,9 +63,6 @@ public class RobotContainer
   final CommandXboxController operatorXbox = new CommandXboxController(2);
 
   // ========== SUBSYSTEMS ==========
-
-
-
   private final HopperSubsystem  hopper  = new HopperSubsystem();
   private final FeederSubsystem  feeder  = new FeederSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
@@ -96,7 +93,8 @@ public class RobotContainer
    * This is the ONLY command that runs the hopper and feeder — they are never
    * started independently because balls would jam at a stationary shooter wheel.
    *
-   * When toggled off, all three stop together automatically.
+   * When the trigger is released, whileTrue() cancels this command and each
+   * subsystem falls back to its default (stop) command automatically.
    */
   private Command shootWithFeedCommand() {
     return shooter.setVelocity(RPM.of(1000))
@@ -107,31 +105,26 @@ public class RobotContainer
                   .withName("ShootWithFeed");
   }
 
-    private Command stopStuff() {
-    return shooter.setVelocity(RPM.of(0))
-                  .alongWith(
-                      hopper.stopMotorCommand(),
-                      feeder.stopMotorCommand()
-                  )
-                  .withName("stop");
-  }
-
   // ========== AUTO ==========
-
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer()
   {
+    // ── FIX: Set default (stop) commands on each subsystem ──────────────────
+    //
+    // When whileTrue() ends (trigger released), the scheduler cancels
+    // shootWithFeedCommand() and falls back to these defaults automatically.
+    // This replaces the old onFalse(stopStuff()) which caused command conflicts
+    // and made the motors vibrate/stutter.
+    shooter.setDefaultCommand(shooter.setVelocity(RPM.of(0)));
+    hopper.setDefaultCommand(hopper.stopMotorCommand());
+    feeder.setDefaultCommand(feeder.stopMotorCommand());
+
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
-
-
-
   }
-
-
 
 
   private void configureBindings()
@@ -166,17 +159,15 @@ public class RobotContainer
 
       // ── Operator: Shoot binding ───────────────────────────────────────────
       //
-      // Left trigger (>50%) TOGGLE — full shoot mode.
+      // Left trigger (>50%) — full shoot mode.
       //
-      // Runs shooter + hopper + feeder simultaneously.
-      // This is the ONLY way to run the hopper and feeder — they are never
-      // triggered independently because a ball would jam against a stopped
-      // shooter wheel. When toggled off, all three stop together.
-// This creates a "Trigger" that stays active as long as the axis is over 0.5
+      // Runs shooter + hopper + feeder simultaneously via whileTrue().
+      // When the trigger is released, whileTrue() cancels the command and
+      // the scheduler automatically falls back to each subsystem's default
+      // (stop) command — no onFalse() needed, no command conflict.
       operatorXbox.leftTrigger(0.5)
-          .whileTrue(shootWithFeedCommand())
-          .onFalse(stopStuff());
-
+          .whileTrue(shootWithFeedCommand());
+          // ↑ No .onFalse() here — default commands handle stopping cleanly.
     }
   }
 
@@ -193,8 +184,4 @@ public class RobotContainer
     }
     return HUB_CENTER_BLUE;
   }
-
-
-
-
 }
