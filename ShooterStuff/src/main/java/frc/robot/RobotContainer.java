@@ -97,7 +97,7 @@ public class RobotContainer
    * subsystem falls back to its default (stop) command automatically.
    */
   private Command shootWithFeedCommand() {
-    return shooter.setVelocity(RPM.of(1000))
+    return shooter.set(0.1)
                   .alongWith(
                       hopper.runMotorCommand(0.1),
                       feeder.runMotorCommand(0.1)
@@ -118,7 +118,7 @@ public class RobotContainer
     // shootWithFeedCommand() and falls back to these defaults automatically.
     // This replaces the old onFalse(stopStuff()) which caused command conflicts
     // and made the motors vibrate/stutter.
-    shooter.setDefaultCommand(shooter.setVelocity(RPM.of(0)));
+    shooter.setDefaultCommand(shooter.set(0));
     hopper.setDefaultCommand(hopper.stopMotorCommand());
     feeder.setDefaultCommand(feeder.stopMotorCommand());
 
