@@ -74,8 +74,15 @@ public class RobotContainer
   private static final double TURRET_MANUAL_MAX_SPEED_DEG_PER_SEC = 90.0;
 
   // ========== FEED SYSTEM SPEEDS ==========
-  private static final double HOPPER_SPEED = 0.5;
-  private static final double FEEDER_SPEED = 0.5;
+  /*
+  private   double HOPPER_SPEED = 0.1;
+  private   double FEEDER_SPEED = 0.1;
+    private   double SHOOTER_SPEED = 0.1;
+ */
+    private double HOPPER_SPEED = SmartDashboard.getNumber("HOPPER_SPEED", 0.1);
+    private double FEEDER_SPEED = SmartDashboard.getNumber("FEEDER_SPEED", 0.1);
+   private double SHOOTER_SPEED = SmartDashboard.getNumber("SHOOTER_SPEED", 0.1);
+
 
   // =========================================================================
   //  SHOOT COMMAND FACTORY
@@ -97,10 +104,10 @@ public class RobotContainer
    * subsystem falls back to its default (stop) command automatically.
    */
   private Command shootWithFeedCommand() {
-    return shooter.set(0.1)
+    return shooter.set(FEEDER_SPEED)
                   .alongWith(
-                      hopper.runMotorCommand(0.1),
-                      feeder.runMotorCommand(0.1)
+                      hopper.runMotorCommand(HOPPER_SPEED),
+                      feeder.runMotorCommand(SHOOTER_SPEED)
                   )
                   .withName("ShootWithFeed");
   }
@@ -121,6 +128,12 @@ public class RobotContainer
     shooter.setDefaultCommand(shooter.set(0));
     hopper.setDefaultCommand(hopper.stopMotorCommand());
     feeder.setDefaultCommand(feeder.stopMotorCommand());
+    
+
+
+    HOPPER_SPEED = SmartDashboard.getNumber("HOPPER_SPEED", 0.1);
+    FEEDER_SPEED = SmartDashboard.getNumber("FEEDER_SPEED", 0.1);
+    SHOOTER_SPEED = SmartDashboard.getNumber("SHOOTER_SPEED", 0.1);
 
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
