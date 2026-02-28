@@ -168,6 +168,9 @@ private Command shootWithFeedCommand() {
             () -> operatorXbox.getRightX(),
             TURRET_MANUAL_MAX_SPEED_DEG_PER_SEC));
 
+          operatorXbox.a().onTrue(turret.setAngleCommand(0));
+          operatorXbox.b().onTrue(turret.setAngleCommand(-90));
+
     // ── Simulation bindings ───────────────────────────────────────────────
     if (Robot.isSimulation())
     {

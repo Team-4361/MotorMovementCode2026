@@ -51,10 +51,10 @@ public class TurretSubsystem extends SubsystemBase {
   // ========== MOTOR CONSTANTS ==========
   private final DCMotor dcMotor = DCMotor.getNeo550(1);
   private final int canID = 6; // Change to your CAN ID
-  private final double gearRatio = 1.0; // Change to your gear ratio
+  private final double gearRatio = 120.0; // Change to your gear ratio
   
   // PID Constants - TUNE THESE FOR YOUR ROBOT
-  private final double kP = 0.5; // Start with a lower value - increase if response is too slow
+  private final double kP = 1.5; // Start with a lower value - increase if response is too slow
   private final double kI = 0.0;
   private final double kD = 0.0;
   
@@ -191,7 +191,7 @@ public class TurretSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Check limit switch
-    boolean limitSwitchPressed = !limitSwitch.get(); // Inverted because limit switches are normally open
+    boolean limitSwitchPressed = limitSwitch.get(); // Inverted because limit switches are normally open
     
     // Detect rising edge (limit switch just pressed)
     if (limitSwitchPressed && !lastLimitSwitchState) {
