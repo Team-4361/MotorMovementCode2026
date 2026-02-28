@@ -106,13 +106,16 @@ private double SHOOTER_SPEED = 0.1;
    */
 private Command shootWithFeedCommand() {
     return Commands.defer(() ->
-        shooter.set(SmartDashboard.getNumber("SHOOTER_SPEED", 0.1))
-               .alongWith(
-                   hopper.runMotorCommand(SmartDashboard.getNumber("HOPPER_SPEED", 0.1)),
-                   feeder.runMotorCommand(SmartDashboard.getNumber("FEEDER_SPEED", 0.1))
-               )
-               .withName("ShootWithFeed"),
-        Set.of(shooter, hopper, feeder)  // declare requirements
+        Commands.sequence(
+            shooter.set(SmartDashboard.getNumber("SHOOTER_SPEED", 0.1))
+                   .withTimeout(0.25),
+            shooter.set(SmartDashboard.getNumber("SHOOTER_SPEED", 0.1))
+                   .alongWith(
+                       hopper.runMotorCommand(SmartDashboard.getNumber("HOPPER_SPEED", 0.1)),
+                       feeder.runMotorCommand(SmartDashboard.getNumber("FEEDER_SPEED", 0.1))
+                   )
+        ).withName("ShootWithFeed"),
+        Set.of(shooter, hopper, feeder)
     );
 }
 
