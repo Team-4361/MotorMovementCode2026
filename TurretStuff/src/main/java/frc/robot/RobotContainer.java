@@ -23,17 +23,20 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.FeederSubsystem;
-import frc.robot.subsystems.HopperSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
+//import frc.robot.subsystems.FeederSubsystem;
+//import frc.robot.subsystems.HopperSubsystem;
+//import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
+
 import java.util.Set;
 import static edu.wpi.first.units.Units.RPM;
 
 import java.io.File;
 import java.util.Optional;
 
-import swervelib.SwerveInputStream;
+//import swervelib.SwerveInputStream;
 
 
 /**
@@ -63,9 +66,11 @@ public class RobotContainer
   final CommandXboxController operatorXbox = new CommandXboxController(2);
 
   // ========== SUBSYSTEMS ==========
-  private final HopperSubsystem  hopper  = new HopperSubsystem();
-  private final FeederSubsystem  feeder  = new FeederSubsystem();
-  private final ShooterSubsystem shooter = new ShooterSubsystem();
+  //private final HopperSubsystem  hopper  = new HopperSubsystem();
+  //private final FeederSubsystem  feeder  = new FeederSubsystem();
+  //private final ShooterSubsystem shooter = new ShooterSubsystem();
+  private final TurretSubsystem  turret  = new TurretSubsystem();
+
 
   // Vision auto-runs via its periodic() — no manual calls needed anywhere.
   //private final Vision vision = new Vision(drivebase);
@@ -104,6 +109,8 @@ private double SHOOTER_SPEED = 0.1;
    * When the trigger is released, whileTrue() cancels this command and each
    * subsystem falls back to its default (stop) command automatically.
    */
+
+   /* 
 private Command shootWithFeedCommand() {
     return Commands.defer(() ->
         Commands.sequence(
@@ -118,7 +125,7 @@ private Command shootWithFeedCommand() {
         Set.of(shooter, hopper, feeder)
     );
 }
-
+*/
   // ========== AUTO ==========
 
   /**
@@ -138,9 +145,9 @@ private Command shootWithFeedCommand() {
     SmartDashboard.putNumber("SHOOTER_SPEED", 0.1);
 
 
-    shooter.setDefaultCommand(shooter.set(0));
-    hopper.setDefaultCommand(hopper.stopMotorCommand());
-    feeder.setDefaultCommand(feeder.stopMotorCommand());
+    //shooter.setDefaultCommand(shooter.set(0));
+    //hopper.setDefaultCommand(hopper.stopMotorCommand());
+    //feeder.setDefaultCommand(feeder.stopMotorCommand());
     
 
 
@@ -152,6 +159,14 @@ private Command shootWithFeedCommand() {
 
   private void configureBindings()
   {
+
+
+    
+    // Turret default: manual right-stick control
+    turret.setDefaultCommand(
+        turret.manualControlCommand(
+            () -> operatorXbox.getRightX(),
+            TURRET_MANUAL_MAX_SPEED_DEG_PER_SEC));
 
     // ── Simulation bindings ───────────────────────────────────────────────
     if (Robot.isSimulation())
@@ -188,8 +203,8 @@ private Command shootWithFeedCommand() {
       // When the trigger is released, whileTrue() cancels the command and
       // the scheduler automatically falls back to each subsystem's default
       // (stop) command — no onFalse() needed, no command conflict.
-      operatorXbox.leftTrigger(0.5)
-          .whileTrue(shootWithFeedCommand());
+      //operatorXbox.leftTrigger(0.5)
+        //  .whileTrue(shootWithFeedCommand());
           // ↑ No .onFalse() here — default commands handle stopping cleanly.
     }
   }
