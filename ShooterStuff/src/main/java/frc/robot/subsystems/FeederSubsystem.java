@@ -27,7 +27,7 @@ public class FeederSubsystem extends SubsystemBase
          SparkFlexConfig config = new SparkFlexConfig();
             sparkFlex.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        config.idleMode(IdleMode.kBrake);
+        config.idleMode(IdleMode.kCoast);
         sparkFlex.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         encoder = sparkFlex.getEncoder();
     }
