@@ -51,7 +51,7 @@ public class TurretSubsystem extends SubsystemBase {
   // ========== MOTOR CONSTANTS ==========
   private final DCMotor dcMotor = DCMotor.getNeo550(1);
   private final int canID = 6; // Change to your CAN ID
-  private final double gearRatio = 120.0; // Change to your gear ratio
+  private final double gearRatio = 128.0; // Change to your gear ratio
   
   // PID Constants - TUNE THESE FOR YOUR ROBOT
   private final double kP = 1.5; // Start with a lower value - increase if response is too slow
