@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
-
+import edu.wpi.first.units.Units;
 
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
@@ -61,12 +61,19 @@ public class ShooterSubsystem extends SubsystemBase {
 
 SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
   .withControlMode(ControlMode.CLOSED_LOOP)
-  // Feedback Constants (PID Constants)
-  .withClosedLoopController(50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
-  .withSimClosedLoopController(50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
-  // Feedforward Constants
-  .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
-  .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+.withClosedLoopController(
+    0.00016541, 0, 0,
+    RPM.of(5000),
+    RotationsPerSecondPerSecond.of(2500)   // ← fix units here too
+)
+.withSimClosedLoopController(
+    0.00016541, 0, 0,
+    RPM.of(5000),
+    RotationsPerSecondPerSecond.of(2500)
+)
+.withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
+.withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
+
   // Telemetry name and verbosity level
   .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
   // Gearing from the motor rotor to final shaft.
