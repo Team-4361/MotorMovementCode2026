@@ -17,10 +17,8 @@ public class RobotContainer {
 
     private void configureBindings() {
 
-        // Hold Right Bumper to run shooter at 10% speed
         driver.rightBumper().whileTrue(shooter.set(0.1));
 
-        // ── SysId ─────────────────────────────────────────────────────────────
         driver.start().onTrue(Commands.runOnce(SignalLogger::start));
         driver.back().onTrue(Commands.runOnce(SignalLogger::stop));
 
