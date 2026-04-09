@@ -15,7 +15,7 @@ public class Robot extends TimedRobot {
     private static final int    LEFT_MOTOR_CAN_ID  = 1;
     private static final int    RIGHT_MOTOR_CAN_ID = 2;
     private static final int    XBOX_PORT          = 0;
-    private static final double MAX_SPEED          = 0.10;
+    private static final double MAX_SPEED          = 1.00;
 
     private SparkMax leftMotor;
     private SparkMax rightMotor;
